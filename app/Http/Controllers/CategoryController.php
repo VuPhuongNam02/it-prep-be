@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
@@ -15,7 +16,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'data' => Category::all()
+        ], 200);
     }
 
     /**
@@ -38,9 +41,28 @@ class CategoryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'thumbnail' => 'required',
-
+            'parentId' => 'required',
+            'description' => 'required',
+            'status' => 'required',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Invalid',
+                'errors' => $validator->errors()
+            ], 401);
+        } else {
+            Category::create([
+                'name' => $request->name,
+                'slug' => Str::slug($request->name, '-'),
+                'parentId' => $request->parentId,
+                'description' => $request->description,
+                'status' => $request->status
+            ]);
+            return response()->json([
+                'message' => 'Thêm danh mục thành công',
+            ], 200);
+        }
     }
 
     /**
@@ -60,9 +82,11 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function edit(Category $category)
+    public function edit($id)
     {
-        //
+        return response()->json([
+            'data' => Category::find($id)
+        ], 200);
     }
 
     /**
@@ -72,9 +96,19 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, $id)
     {
-        //
+        $category = Category::find($id);
+        $category::update([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name, '-'),
+            'parentId' => $request->parentId,
+            'description' => $request->description,
+            'status' => $request->status
+        ]);
+        return response()->json([
+            'message' => 'Thêm danh mục thành công',
+        ], 200);
     }
 
     /**
@@ -83,8 +117,9 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category)
+    public function destroy($id)
     {
-        //
+        $category = Category::find($id);
+        $category->delete();
     }
 }
