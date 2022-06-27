@@ -3,16 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Jenssegers\Mongodb\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+class Question extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
-
+    use HasFactory;
     protected $connection = 'mongodb';
-    protected $collection = 'users';
+    protected $collection = 'questions';
 
     /**
      * The attributes that are mass assignable.
@@ -20,16 +17,13 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'firstName',
-        'lastName',
-        'birthday',
-        'email',
-        'address',
-        'password',
-        'education',
-        'phone',
-        'role',
+        'content',
+        'grading',
+        'type',
+        'level',
         'status',
+        'ownerId',
+        'categoryId',
     ];
 
     /**
@@ -37,10 +31,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = [];
 
     /**
      * The attributes that should be cast.
@@ -48,6 +39,12 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'education' => 'array',
+        'content' => [
+            [
+                'image' => 'string',
+                'code' => 'string',
+                'text' => 'string',
+            ]
+        ],
     ];
 }
